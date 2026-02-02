@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+body{
+   font-family:sans-serif;
+    background:#f4f6fb;
+   color:#111;
+   }
+ .navbar{
+   width:100%;
+   background:#fff;
+   padding:14px 40px;
+   display:flex;
+   justify-content:space-between;
+   align-items:center;
+   box-shadow:0 2px 12px rgba(0,0,0,0.08);
+   position:sticky;
+   top:0;
+   z-index:10;
+ }
+ h1{
+   color:#1a73e8;
+   
+ }
+ .nav-links{
+   display:flex;
+   align-items:center;
+   gap:18px;
+   flex-wrap:wrap;
+ }
+ .nav-links a{
+   text-decoration:none;
+   font-weight:700;
+   color:#222;
+   padding:8px 10px;
+   border-radius:8px;
+   transition:0.2s;
+ }
+ .nav-links a:hover{
+   background:#e8f0fe;
+   color:#1a73e8;
+ }
+ #logout{
+   background-color:rgb(255, 0, 0);
+   color:white;
+ }
+ #logout:hover{
+   background-color:rgb(205, 24, 24);
+ }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Complaint Management System</h1>
+        <div class="nav-links" id="navLinks">
+      
+        </div>
+    </div>
+    <script>
+        const nav = document.getElementById("navLinks");
+        const token = localStorage.getItem("access");
+        
+        if (token) {
+          nav.innerHTML = `
+            <a href="{% url 'my_complaints_page'%}">My Complaints</a>
+            <a href="#">Contact</a>
+            <a href="#" onclick="logout()">Logout</a>
+          `;
+        } else {
+          nav.innerHTML = `
+            <a href="{% url 'home'%}">Home</a>
+            <a href="{% url 'login'%}">Login</a>
+            <a href="{% url 'register'%}">Register</a>
+            <a href="#">Contact</a>
+          `;
+        }
+        
+        function logout() {
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+          window.location.href = "{% url 'login'%}";
+        }
+      </script>
+</body>
+</html>

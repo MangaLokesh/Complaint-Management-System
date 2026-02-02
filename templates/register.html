@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register | Complaint Management System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'register.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="box">
+  <h2>Create Account</h2>
+  <form onsubmit="event.preventDefault();">
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <input type="password" id="password2" placeholder="Confirm Password" required>
+    <p class="msg" id="msg"></p><br>
+    <button type="submit" onclick="registerUser()">Register</button>
+  </form>
+
+  <p class="msg" id="msg"></p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script >
+  async function registerUser(){
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const password2 = document.getElementById("password2").value;
+    const msg = document.getElementById("msg");
+    const res = await fetch("http://127.0.0.1:8000/api/register/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password, password2 })
+    });
+  
+    const data = await res.json();
+  
+    if(res.ok){
+      alert(data.message);
+      setTimeout(() => {
+        window.location.href = "{% url 'login' %}";
+      }, 300);
+    } else {
+      if (typeof data.error === "string") {
+         alert(data.error);       
+      } else {
+        const field = Object.keys(data.error)[0];
+        alert(data.error[field][0]);
+      }
+    }
+  }
+</script>
+{% endblock %}
+

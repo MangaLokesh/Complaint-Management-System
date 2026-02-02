@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Complaint Raise | Complaint Management System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'raisecomplaint.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="com">
+  <h3>Raise Complaint</h3>
+      <form onsubmit="event.preventDefault()" method="POST">
+          {% csrf_token%}
+          <label>Complaint Title:</label><br>
+          <input type="text" id="ct"name="title" placeholder="Enter the Complaint title"><br>
+          <label>Description:</label><br>
+          <textarea rows="6" cols="30" id="desc" placeholder="Describe Your issue in detail...."></textarea><br>
+          <label>Room No:</label><br>
+          <input type="text" id="rn" placeholder="Room No"><br>
+          <input type="submit" value="Submit Complaint" id="btn"  onclick="raise()" >
+      </form>
+ </div>
+{% endblock %}
+
+{% block extra_js %}
+<script >
+  async function raise() {
+    const token = localStorage.getItem("access");
+    const title = document.getElementById("ct").value;
+    const description = document.getElementById("desc").value;
+    const room_no = document.getElementById("rn").value;
+  
+    try {
+      const res1 = await fetch("http://127.0.0.1:8000/apicomplaints/raisecomplaintsapi/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ title, description, room_no })
+      });
+  
+      const data1 = await res1.json();
+  
+      if (!res1.ok) {
+        alert(data1.error || "Failed to submit complaint ❌");
+        return;
+      }
+  
+      alert("Complaint submitted successfully ✅");
+      window.location.href="{% url 'my_complaints_page'%}"
+    } 
+    catch (err) {
+      console.error(err);
+      alert("Something went wrong ❌");
+    }
+  }
+</script>
+{% endblock %}
+

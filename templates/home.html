@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home | Complaint Management System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'home.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="hero">
+    <h2>Raise Complaints Easily 🚀</h2>
+    <p>
+      Complaint Management System helps hostel / college / PG students to raise complaints,
+      track status, and get faster resolution with proper management.
+    </p>
+    <a href="{% url 'login'%}">Raise Complaint</a>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>📌 Easy Complaint Raising</h3>
+      <p>
+        Users can submit complaints in seconds with title, description and category.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>⏳ Track Status</h3>
+      <p>
+        Track complaint progress like Pending, In Progress, Resolved.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>🔒 Secure System</h3>
+      <p>
+        Only authenticated users can raise complaints and admins can manage issues.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>⚡ Faster Resolution</h3>
+      <p>
+        Admins can view complaints, update status and assign to staff quickly.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script ></script>
+{% endblock %}
+

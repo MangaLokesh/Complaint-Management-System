@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <style>
+    *{
+      margin:0%;
+    }
+     body { font-family: Arial; background:#f4f6fb; }
+    h2 { margin-top: 30px; }
+    .nav{display:flex;
+      justify-content:space-evenly;
+      align-items:center;
+      background-color:white;
+      padding:20px;
+      box-shadow:2px 2px 4px black;
+      position:sticky;
+      top:0%;
+    }
+    h1{
+      color: #0d6efd;
+    }
+    .nav a:hover{
+      background-color:rgb(215, 28, 28);
+      
+    }
+    .nav a{
+      text-decoration:none;
+      font-size:20px;
+      color:#222;
+      padding:7px 15px;
+      background-color: rgb(246, 10, 10);
+      color:white;
+      border-radius:8px;
+    }
+     .resolve{
+      background-color: rgb(234, 234, 10);
+      color:black;
+    }
+    .resolve:hover{
+      background-color:rgb(208, 208, 50);
+      
+      cursor:pointer;
+    }
+    .resolved{
+      background-color:green;
+      color: black;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    td button{
+      padding:6px 25px;
+      color:white;
+      border:none;
+    }
+    .delete{
+      background-color:rgb(246, 10, 10);
+      padding:6px 25px;
+      color:white;
+      border:none;
+    }
+    .delete:hover{
+      background-color:rgb(215, 28, 28);
+      cursor:pointer;
+    }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 10px; border: 1px solid #ddd; text-align:center;}
+    th { background: #0d6efd; color: white; } 
+  </style>
+</head>
+<body>
+<div class="nav">
+<h1>Admin Dashboard</h1>
+<a href="#" onclick="myFunction(event)">Logout</a>
+</div>
+<h2>All Complaints</h2>
+<table id="complaintsTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Submitted On</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in complaints%}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{i.title}}</td>
+      <td>{{i.description}}</td>
+      <td>{{i.created_at}}</td>
+      <td>
+        {% if i.status == "pending"%}
+        <button class="resolve"onclick="resolve({{i.id}},this)">Resolve</button>
+        {%else%}
+        <button class="resolved">Resolved</button>
+        {%endif%}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<h2>All Users</h2>
+<table id="usersTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>DateOfJoin</th>
+      <th>Action</th>
+    </tr>
+
+  </thead>
+  <tbody>
+    {% for i in users%}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{i.username}}</td>
+      <td>{{i.email}}</td>
+      <td>{{i.date_joined}}</td>
+      <td><button class="delete" onclick="deleteuser({{i.id}},this)">Delete</button></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  function myFunction(e){
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    window.location.href = "{% url 'login'%}";
+  }
+  async function resolve(id,btn) {
+    const token = localStorage.getItem("access");
+    try {
+      const res = await fetch(
+          `http://127.0.0.1:8000/apicomplaints/resolvecomplaintapi/${id}/`,
+          {
+              method: "PATCH",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`
+              }
+          }
+      );
+
+      if (!res.ok) {
+          throw new Error("Failed");
+      }
+      btn.style.color="black";
+      btn.innerText = "Resolved";
+      btn.style.backgroundColor = "green";
+      btn.style.opacity=0.6;
+      btn.style.cursor="not-allowed";
+      
+
+  } catch (err) {
+      alert("Could not resolve complaint ❌");
+      console.error(err);
+  }
+}
+async function deleteuser(id,btn){
+  const token = localStorage.getItem("access");
+  try {
+    const res = await fetch(
+        `http://127.0.0.1:8000/apicomplaints/deleteuserapi/${id}/`,
+        {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    );
+    const data = await res.json();
+      if(!res.ok){
+      alert("Deletion is Not Performed!");
+      return;
+    }
+    const val=confirm("Are You Sure Want to Delete!")
+    if (val){
+     //btn.closest("tr").remove(); 
+     alert("Successfully Deleted!✅")
+     window.location.href="{% url 'admin_dashboard'%}"
+     return;
+  }
+      }catch (err) {
+        alert("Could not resolve complaint ❌");
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+table{
+    border-collapse: collapse;
+    width:100%;
+    margin-top:20px;
+} 
+#mycom{
+    text-align: center;
+    margin-top: 20px;
+    color: black;
+    text-decoration: underline;
+}
+#head{
+    color:white; 
+    padding: 10px;
+    background-color: #3b7fe7;
+}
+th{
+  padding:10px;
+}
+.actiontd{
+  padding:10px;
+  display:flex;
+  justify-content:space-evenly;
+}
+.update{
+  padding:10px 25px;
+  background-color:green;
+  color:white;
+  border:none;
+  border-radius:4px;
+}
+.delete{
+  padding:10px 25px;
+  background-color:red;
+  color:white;
+  border:none;
+  border-radius:4px;
+}
+.delete:hover,.update:hover{
+  cursor:pointer;
+}
+td{
+  padding: 10px 20px;;
+  text-align:center;
+}

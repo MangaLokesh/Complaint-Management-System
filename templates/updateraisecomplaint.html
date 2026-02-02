@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Update Complaint | Complaint Management System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'updateraisecomplaint.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="com">
+  <h3>Raise Complaint</h3>
+      <form onsubmit="event.preventDefault()" >
+          {% csrf_token%}
+          <label>Complaint Title:</label><br>
+          <input type="text" id="ct"name="title" placeholder="Enter the Complaint title" value="{{complaint.title}}"><br>
+          <label>Description:</label><br>
+          <textarea rows="6" cols="50" id="desc" placeholder="Describe Your issue in detail....">{{complaint.description}}</textarea><br>
+          <label>Room No:</label><br>
+          <input type="text" id="rn" placeholder="Room No" value="{{complaint.room_no}}"><br>
+          <input type="submit" value="Save" id="btn" onclick="update()">
+      </form>
+ </div>
+{% endblock %}
+
+{% block extra_js %}
+<script >
+  async function update(){
+    const token = localStorage.getItem("access");
+
+    const data = {
+        title: document.getElementById("ct").value,
+        description: document.getElementById("desc").value,
+        room_no: document.getElementById("rn").value
+    };
+
+    const res = await fetch(`http://127.0.0.1:8000/apicomplaints/updatecomplaintapi/{{ complaint.id }}/`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+        alert("Complaint Updated ✅");
+        window.location.href = "/apicomplaints/my_complaints_page/";//{% url 'my_complaints_page'%}
+    } else {
+        alert("Error ❌");
+    }    
+     }
+</script>
+{% endblock %}
+

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Complaints | Complaint Management System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'mycomplaints.css' %}">
+{% endblock %}
+
+{% block content %}
+      <h2 id="mycom">My Complaints</h2>
+        <table border="1" id="complaintsTable">
+            <tr id="head">
+              <th>S.No</th>
+              <th>Problem</th>
+              <th>Description</th>
+              <th>Room No</th>
+              <th>Submitted On</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+        </table>
+        <button onclick="back()"style="padding:10px 30px; color:white;background-color:#3b7fe7;border:none;margin-left:47%;margin-top:20px;cursor:pointer;">Back</button>
+{% endblock %}
+
+{% block extra_js %}
+<script >
+  loadComplaints();
+  async function loadComplaints() {
+    const token = localStorage.getItem("access");
+  
+    if (!token) {
+      alert("Please login first");
+      window.location.href = "/login/";
+      return;
+    }
+  
+    const res = await fetch("http://127.0.0.1:8000/apicomplaints/my_complaints/", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+  
+    if (!res.ok) {
+      alert("Session expired. Please login again.");
+      window.location.href = "/login/";
+      return;
+    }
+  
+    const data = await res.json();
+    const tbody = document.querySelector("#complaintsTable");
+
+  
+    console.log(data)//[{},{}]
+    if (data.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center;color:red;">No complaints yet</td>
+        </tr>
+      `;
+      return;
+    }
+  
+    data.forEach((c, index) => {
+      const row = document.createElement("tr");
+      const date = new Date(c.created_at);
+      const options = { 
+        day: "2-digit", 
+        month: "short", 
+        year: "numeric", 
+        hour: "2-digit", 
+        minute: "2-digit", 
+        hour12: true 
+      };
+      
+      const formattedDate = date.toLocaleString("en-IN", options);
+
+      let actionButtons = `
+    <button class="update" onclick="updatecomplaint(${c.id}, this)">Update</button>
+    <button class="delete" onclick="deletecomplaint(${c.id}, this)">Delete</button>
+  `;
+
+      let statusColor = "red";
+      if (c.status === "resolved") {
+           statusColor = "green";
+      }
+
+      if (c.status === "resolved") {
+        actionButtons = `<span style="color:gray;">No actions</span>`;
+      }
+
+      row.innerHTML = `
+          <td style="padding:10px 20px;">${index + 1}</td>
+          <td>${c.title}</td>
+          <td>${c.description}</td>
+          <td>${c.room_no}</td>
+          <td>${formattedDate}</td>
+          <td style="color:${statusColor}">${c.status}</td>
+          <td>${actionButtons}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+  async function deletecomplaint(id,btn){
+    console.log(id);
+    const res=await fetch(`http://127.0.0.1:8000/apicomplaints/delete/${id}/`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("access")}`,
+      }
+    })
+    const mess=await res.json();
+     if (res.ok){
+        //btn.closest("tr").remove();
+        window.location.href="{% url 'my_complaints_page'%}"
+        alert(mess.message);
+     }
+  }
+  function updatecomplaint(id,btn){
+    window.location.href=`/apicomplaints/update/${id}/`;
+  }
+  function back(){
+    window.location.href="{% url 'raise_complaint'%}";
+  }
+</script>
+{% endblock %}
